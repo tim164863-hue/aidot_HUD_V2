@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useAgentsStore } from '@/stores/agents-store';
+import { useCronStore } from '@/stores/cron-store';
 import { AppView } from '@/types';
 import Layout from '@/components/Layout';
 import HUDView from '@/components/HUDView';
@@ -15,11 +17,28 @@ import CodeView from '@/components/CodeView';
 
 const App: React.FC = () => {
   const { activeView, isLoaded, setLoaded } = useAppStore();
+  const fetchAgents = useAgentsStore((s) => s.fetchAgents);
+  const fetchJobs = useCronStore((s) => s.fetchJobs);
+  const fetchStats = useCronStore((s) => s.fetchStats);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 1200);
     return () => clearTimeout(timer);
   }, [setLoaded]);
+
+  // Fetch real data on load
+  useEffect(() => {
+    fetchAgents();
+    fetchJobs();
+    fetchStats();
+    // Refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchAgents();
+      fetchJobs();
+      fetchStats();
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, [fetchAgents, fetchJobs, fetchStats]);
 
   if (!isLoaded) {
     return (

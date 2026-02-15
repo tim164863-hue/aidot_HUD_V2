@@ -58,7 +58,8 @@ class ApiService {
   private rateLimiter = new RateLimiter(60, 60_000); // 60 req/min
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+    this.authToken = import.meta.env.VITE_API_AUTH_TOKEN || null;
   }
 
   setAuthToken(token: string | null) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import BrainNetwork from '@/components/BrainNetwork';
 import { chatStream } from '@/services/gemini';
-import { SEED_AGENTS } from '@/lib/mock-data';
+import { useAgentsStore } from '@/stores/agents-store';
 import { Shield, Cpu, Wifi, Crosshair, Send, Bot, Terminal as TerminalIcon, ChevronDown, BarChart3 } from 'lucide-react';
 
 interface Message {
@@ -21,6 +21,7 @@ const PROCESSING_LOGS = [
 ];
 
 const HUDView: React.FC = () => {
+  const agents = useAgentsStore((s) => s.agents);
   const [timestamp, setTimestamp] = useState(new Date());
   const [binary, setBinary] = useState("");
   const [messages, setMessages] = useState<Message[]>([
@@ -28,7 +29,7 @@ const HUDView: React.FC = () => {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState(SEED_AGENTS[0]);
+  const [selectedAgent, setSelectedAgent] = useState(agents[0]);
   const [isAgentMenuOpen, setIsAgentMenuOpen] = useState(false);
   const [currentLog, setCurrentLog] = useState(PROCESSING_LOGS[0]);
 
@@ -146,7 +147,7 @@ const HUDView: React.FC = () => {
 
                 {isAgentMenuOpen && (
                   <div className="absolute top-12 left-2 right-2 glass border-white/10 z-30 flex flex-col py-1 shadow-2xl">
-                    {SEED_AGENTS.map(agent => (
+                    {agents.map(agent => (
                       <button
                         key={agent.id}
                         onClick={() => {
@@ -275,7 +276,7 @@ const HUDView: React.FC = () => {
 
             <HUDPanel title="Network_Health" className="flex-1 overflow-y-auto no-scrollbar">
               <div className="space-y-4 font-mono text-[10px]">
-                {SEED_AGENTS.map((agent, i) => (
+                {agents.map((agent, i) => (
                   <div key={i} className="flex flex-col gap-1">
                     <div className="flex justify-between">
                       <span className="text-zinc-300">#_{agent.name.toUpperCase()}</span>
